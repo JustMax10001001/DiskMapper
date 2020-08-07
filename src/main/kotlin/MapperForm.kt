@@ -53,17 +53,15 @@ class MapperForm : View("Disk Mapper") {
                 row.contextMenu = ContextMenu(
                     MenuItem("Show in explorer").apply {
                         action {
-                            if (row.treeItem.value.path != "@@smallfiles@@") {
-                                with(row.treeItem.value) {
-                                    val cmd = "explorer.exe " +
-                                            (if (!isDirectory) "/select, " else "") +
-                                            "\"$path\""
-                                    println(cmd)
-                                    Runtime.getRuntime().exec(
-                                        cmd
-                                    )
-                                }
+                            with(row.treeItem.value) {
+                                if (this.path.contains("<"))      // then it's a row of grouped small files
+                                    return@action
+
+                                Runtime.getRuntime().exec(
+                                    constructFileSelectionCmd(this)
+                                )
                             }
+
                         }
                     }
                 )
@@ -78,7 +76,7 @@ class MapperForm : View("Disk Mapper") {
         }
         hbox(8) {
             button(taskStatus.running.stringBinding {
-                if (it != null && it) TEXT_STOP
+                if (it == true) TEXT_STOP
                 else TEXT_START
             }) {
                 action {
@@ -88,7 +86,7 @@ class MapperForm : View("Disk Mapper") {
                         val startDirectory = chooseDirectory(owner = currentWindow) ?: return@action
 
                         var rootFileName = startDirectory.name
-                        if (rootFileName.isEmpty())  // then it is drive letter
+                        if (rootFileName.isEmpty())     // then it is drive letter as File.name returns empty string only on root paths
                             rootFileName = Paths.get(startDirectory.absolutePath).root.toString()
 
                         rootFileEntry = DirectoryEntry(
@@ -184,6 +182,16 @@ class MapperForm : View("Disk Mapper") {
 
         // recursively update sizes for every directory until root
         updateSizeRecursively(startDirectory, newlyLocatedFilesSize)
+    }
+
+    private fun constructFileSelectionCmd(entry: FileEntry): String {
+        return when (OsUtils.getOS()) {
+            OS.WINDOWS -> "explorer.exe ${if (!entry.isDirectory) "/select, " else ""}\"${entry.path}\""
+            OS.LINUX -> throw NotImplementedError("Linux platform support is not implemented")
+            OS.SOLARIS -> throw NotImplementedError("Solaris platform support is not implemented")
+            OS.MAC -> throw NotImplementedError("Max platform support is not implemented")
+            else -> throw RuntimeException("Could not determine current platform")
+        }
     }
 
     private fun updateSizeRecursively(entry: DirectoryEntry?, newlyLocatedFilesSize: Long) {
