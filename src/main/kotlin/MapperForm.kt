@@ -1,5 +1,6 @@
 import controls.FileEntryTreeItem
 import controls.FileSizeTreeTableCell
+import controls.RelativeFileSizeTreeTableCell
 import controls.TypedFileNameTreeTableCell
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleObjectProperty
@@ -18,12 +19,13 @@ class MapperForm : View("Disk Mapper") {
 
     private val taskStatus by inject<TaskStatus>()
     private var fileFetcherTask: Task<Unit>? = null
-
     private val rootFileEntryProperty = SimpleObjectProperty<DirectoryEntry>()
-    private var rootFileEntry by rootFileEntryProperty
 
+    private var rootFileEntry by rootFileEntryProperty
     private var fileTreeView by singleAssign<TreeTableView<FileEntry>>()
+
     private var fileSizeColumn by singleAssign<TreeTableColumn<FileEntry, Number>>()
+    private var relativeSizeColumn by singleAssign<TreeTableColumn<FileEntry, Number>>()
 
     override val root = vbox(8) {
         fileTreeView = treetableview<FileEntry> {
@@ -31,6 +33,10 @@ class MapperForm : View("Disk Mapper") {
                 ReadOnlyObjectWrapper(x.value.value)
             }.remainingWidth()
                 .setCellFactory { TypedFileNameTreeTableCell() }
+
+            relativeSizeColumn = column("Relative Size", FileEntry::relativeFileSizeProperty)
+                .contentWidth(64, useAsMin = true, useAsMax = true)
+            relativeSizeColumn.setCellFactory { RelativeFileSizeTreeTableCell() }
 
             fileSizeColumn = column("Size", FileEntry::fileSizeProperty)
                 .contentWidth(40, useAsMin = true, useAsMax = true)

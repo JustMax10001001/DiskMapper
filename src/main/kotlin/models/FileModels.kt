@@ -1,5 +1,6 @@
 package models
 
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleLongProperty
 import tornadofx.getValue
 import tornadofx.setValue
@@ -21,6 +22,8 @@ open class FileEntry {
         this.path = path
         this.fileSize = size
         this.parentFileEntry = parent
+
+        createRelativeSizeBinding()
     }
 
     protected constructor(
@@ -31,6 +34,7 @@ open class FileEntry {
         isDirectory: Boolean = false
     ) : this(simpleName, path, size, parent) {
         this.isDirectory = isDirectory
+
     }
 
     // absolute path of entry.
@@ -43,14 +47,27 @@ open class FileEntry {
 
     // If parentFileEntry == null then it's a root entry
     val parentFileEntry: DirectoryEntry?
+
     val isRoot: Boolean
         get() = parentFileEntry == null
-
     var isDirectory: Boolean = false
         private set
 
     val fileSizeProperty = SimpleLongProperty(0)
     var fileSize by fileSizeProperty
+
+    val relativeFileSizeProperty = SimpleDoubleProperty(1.0)
+
+    private fun createRelativeSizeBinding() {
+        if (isRoot)
+            return
+
+        relativeFileSizeProperty.bind(
+            this.fileSizeProperty.divide(
+                parentFileEntry!!.fileSizeProperty.add(0.0000000001)
+            ).multiply(parentFileEntry.relativeFileSizeProperty)
+        )
+    }
 
     override fun toString(): String {
         return "FileEntry [name = \"${this.simpleName}\", path = \"${this.path}\"]"
