@@ -27,6 +27,8 @@ class MapperForm : View("Disk Mapper") {
     private var fileSizeColumn by singleAssign<TreeTableColumn<FileEntry, Number>>()
     private var relativeSizeColumn by singleAssign<TreeTableColumn<FileEntry, Number>>()
 
+    private val useRelativeSize = config.boolean("useRelativeSize") ?: false
+
     override val root = vbox(8) {
         fileTreeView = treetableview<FileEntry> {
             column("Name") { x: TreeTableColumn.CellDataFeatures<FileEntry, FileEntry> ->
@@ -34,9 +36,11 @@ class MapperForm : View("Disk Mapper") {
             }.remainingWidth()
                 .setCellFactory { TypedFileNameTreeTableCell() }
 
-            relativeSizeColumn = column("Relative Size", FileEntry::relativeFileSizeProperty)
-                .contentWidth(64, useAsMin = true, useAsMax = true)
-            relativeSizeColumn.setCellFactory { RelativeFileSizeTreeTableCell() }
+            if (useRelativeSize) {
+                relativeSizeColumn = column("Relative Size", FileEntry::relativeFileSizeProperty)
+                    .contentWidth(64, useAsMin = true, useAsMax = true)
+                relativeSizeColumn.setCellFactory { RelativeFileSizeTreeTableCell() }
+            }
 
             fileSizeColumn = column("Size", FileEntry::fileSizeProperty)
                 .contentWidth(40, useAsMin = true, useAsMax = true)
@@ -188,6 +192,10 @@ class MapperForm : View("Disk Mapper") {
 
         entry.fileSize += newlyLocatedFilesSize
         updateSizeRecursively(entry.parentFileEntry, newlyLocatedFilesSize)
+    }
+
+    init {
+        FileEntry.UseRelativeSize = useRelativeSize
     }
 
     companion object {

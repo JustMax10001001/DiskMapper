@@ -59,7 +59,7 @@ open class FileEntry {
     val relativeFileSizeProperty = SimpleDoubleProperty(1.0)
 
     private fun createRelativeSizeBinding() {
-        if (isRoot)
+        if (isRoot || !UseRelativeSize)
             return
 
         relativeFileSizeProperty.bind(
@@ -71,6 +71,10 @@ open class FileEntry {
 
     override fun toString(): String {
         return "FileEntry [name = \"${this.simpleName}\", path = \"${this.path}\"]"
+    }
+
+    companion object {
+        var UseRelativeSize = false
     }
 }
 

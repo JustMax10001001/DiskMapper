@@ -57,6 +57,7 @@ class FileEntryTreeItem(item: FileEntry) : TreeItem<FileEntry>(item) {
             if (directoryEntry.areChildrenLoaded) {     // if children are not loaded yet just skip
                 childrenLoading = true                  // to prevent recursion
 
+                @Suppress("RecursivePropertyAccessor")
                 children.setAll(buildChildren(directoryEntry))
 
                 childrenLoaded = true
