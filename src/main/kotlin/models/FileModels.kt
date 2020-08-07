@@ -77,6 +77,6 @@ class DirectoryEntry(
     }
 
     override fun toString(): String {
-        return "DirectoryEntry [name = \"${this.simpleName}\", path = \"${this.path}\""
+        return "DirectoryEntry [name = \"${this.simpleName}\", path = \"${this.path}\"]"
     }
 }
