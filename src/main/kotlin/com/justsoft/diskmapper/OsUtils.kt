@@ -1,3 +1,5 @@
+package com.justsoft.diskmapper
+
 enum class OS {
     WINDOWS, LINUX, MAC, SOLARIS
 }

@@ -1,7 +1,7 @@
-package controls
+package com.justsoft.diskmapper.controls
 
+import com.justsoft.diskmapper.models.FileEntry
 import javafx.scene.control.TreeTableCell
-import models.FileEntry
 import kotlin.math.pow
 
 class FileSizeTreeTableCell: TreeTableCell<FileEntry, Number>(){

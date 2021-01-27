@@ -1,4 +1,4 @@
-package models
+package com.justsoft.diskmapper.models
 
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleLongProperty

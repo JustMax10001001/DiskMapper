@@ -1,3 +1,5 @@
+package com.justsoft.diskmapper
+
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.launch

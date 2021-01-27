@@ -1,14 +1,14 @@
-package controls
+package com.justsoft.diskmapper.controls
 
+import com.justsoft.diskmapper.models.DirectoryEntry
+import com.justsoft.diskmapper.models.FileEntry
 import javafx.collections.ObservableList
 import javafx.scene.control.TreeItem
-import models.DirectoryEntry
-import models.FileEntry
 import kotlin.math.roundToInt
 
 /**
  * Custom tree item with lazy children loading for memory savings
- * as tree items are the main memory hog
+ * as tree items are the com.justsoft.diskmapper.main memory hog
  */
 class FileEntryTreeItem(item: FileEntry) : TreeItem<FileEntry>(item) {
 

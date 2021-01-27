@@ -1,15 +1,17 @@
-import controls.FileEntryTreeItem
-import controls.FileSizeTreeTableCell
-import controls.RelativeFileSizeTreeTableCell
-import controls.TypedFileNameTreeTableCell
+package com.justsoft.diskmapper
+
+import com.justsoft.diskmapper.controls.FileEntryTreeItem
+import com.justsoft.diskmapper.controls.FileSizeTreeTableCell
+import com.justsoft.diskmapper.controls.RelativeFileSizeTreeTableCell
+import com.justsoft.diskmapper.controls.TypedFileNameTreeTableCell
+import com.justsoft.diskmapper.models.DirectoryEntry
+import com.justsoft.diskmapper.models.FileEntry
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleObjectProperty
 import javafx.concurrent.Task
 import javafx.geometry.Pos
 import javafx.scene.control.*
 import javafx.scene.layout.Priority
-import models.DirectoryEntry
-import models.FileEntry
 import tornadofx.*
 import java.io.File
 import java.nio.file.Paths
@@ -97,13 +99,26 @@ class MapperForm : View("Disk Mapper") {
                         fileTreeView.root = FileEntryTreeItem(rootFileEntry as FileEntry)
 
                         fileFetcherTask = runAsync(true, taskStatus) {
+                            Thread {
+                                Thread.sleep(100)
+                                while (true) {
+                                    runLater {
+                                        try {
+                                            sortTable()
+                                        } catch (_: Exception) {
+                                            println("err")
+                                        }
+                                    }
+                                    Thread.sleep(100)
+                                }
+                            }.start()
                             doFileFetchAction(rootFileEntry)
+
                         } ui {
                             // ensure that root node has its children loaded
                             (fileTreeView.root as FileEntryTreeItem).ensureChildrenLoaded()
 
-                            fileTreeView.sortOrder.add(fileSizeColumn)
-                            fileSizeColumn.sortType = TreeTableColumn.SortType.DESCENDING
+                            sortTable()
                         }
                     }
                 }
@@ -129,6 +144,12 @@ class MapperForm : View("Disk Mapper") {
         }
 
         paddingAll = 12
+    }
+
+    private fun sortTable() {
+        (fileTreeView.root as FileEntryTreeItem).ensureChildrenLoaded()
+        fileTreeView.sortOrder.add(fileSizeColumn)
+        fileSizeColumn.sortType = TreeTableColumn.SortType.DESCENDING
     }
 
     private fun FXTask<*>.doFileFetchAction(startDirectory: DirectoryEntry) {

@@ -1,9 +1,9 @@
-package controls
+package com.justsoft.diskmapper.controls
 
+import com.justsoft.diskmapper.models.FileEntry
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.scene.control.TreeTableCell
-import models.FileEntry
 
 class TypedFileNameTreeTableCell : TreeTableCell<FileEntry, FileEntry>() {
 
